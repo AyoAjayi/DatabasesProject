@@ -1,0 +1,17 @@
+CREATE VIEW South_america AS SELECT country_code FROM Country WHERE region = "South America";
+
+CREATE VIEW Central_america AS SELECT country_code FROM Country WHERE region = "Central America";
+
+CREATE VIEW North_america AS SELECT country_code FROM Country WHERE region = "North America";
+
+CREATE VIEW Oceania AS SELECT country_code FROM Country WHERE region = "Oceania";
+
+CREATE VIEW Europe AS SELECT country_code FROM Country WHERE region = "Europe";
+
+CREATE VIEW Asia AS SELECT country_code FROM Country WHERE region = "Asia";
+
+CREATE VIEW Africa AS SELECT country_code FROM Country WHERE region = "Africa";
+
+CREATE VIEW Middle_east AS SELECT country_code FROM Country WHERE region = "Middle East";
+
+CREATE VIEW Caribbean AS SELECT country_code FROM Country WHERE region = "Caribbean";
