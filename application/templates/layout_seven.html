@@ -7,7 +7,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 </head>
 <body>
-  <h1>What is the GDP per capita within a region</h1>
+  <h1>Which country within {{region}} has the highest life expectancy rate and how does it compare to the rest of the region?</h1>
+  <p>Through this chart, you can see that {{highest}} has the highest life expectancy rate</p>
   <canvas id="myChart" width="400" height="400"></canvas>
   
 <script>
@@ -18,8 +19,8 @@ var myChart = new Chart(ctx, {
     data: {
         labels: {{country | tojson}},
         datasets: [{
-            label: 'GDP per capita',
-            data: {{GDP |}},
+            label: 'Average life expectancy (age)',
+            data: {{expectancy | tojson}},
             backgroundColor: 
                 'rgba(255, 99, 132, 0.2)',
             borderColor: 

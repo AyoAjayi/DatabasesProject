@@ -19,12 +19,11 @@ def myapp():
     form = MyForm()
     if form.validate_on_submit():
         return success(form)
-    #     print("YES")
     return render_template('home.html',form=form)
 
 @app.route("/success", methods=['GET', 'POST'])
 def success(form):
-    mydb = mysql.connector.connect(host="localhost", user="root", password="cool1234", database="mydb")
+    mydb = mysql.connector.connect(host="localhost", user="root", password="DA25wn!*", database="final_project")
     mycursor = mydb.cursor()
     country = form.country.data
     region = form.region.data
@@ -33,7 +32,7 @@ def success(form):
     population = []
     if form.query.data == "1":
         args = (0, 0)
-        result = mycursor.callproc('current_country_population', args)
+        result = mycursor.callproc('current_country_pop', args)
         highest = result[0]
         lowest = result[1]
         query = "SELECT country_name, population FROM Country INNER JOIN Population ON Population.country=Country.country_code WHERE year = '2019'"
@@ -41,7 +40,6 @@ def success(form):
         for i in mycursor:
             country_name.append(i[0])
             population.append(i[1])
-        print(country_name)
         return render_template('layout.html', country_name=country_name, population=population, highest=highest, lowest=lowest)
     elif form.query.data == "2":
         args = (0, 0)
@@ -71,7 +69,7 @@ def success(form):
         res = []
         country = form.country.data
         #Change the procedure name to the one that we chose in procedure file when you run code
-        result = mycursor.callproc('y', (country,))
+        result = mycursor.callproc('GDP_population', (country,))
         for result in mycursor.stored_results():
             data = result.fetchall()
         print(data)
@@ -86,20 +84,33 @@ def success(form):
         r = calculateValue(population,gdp)
         return render_template('layout_three.html', res=res, r=r)
     elif form.query.data == "4":
-        country = form.country.data
-        result = mycursor.callproc('current_within_GDP', (country,))
+        region = form.region.data
+        result = mycursor.callproc('current_within_GDP', (region,))
+        country = []
+        GDP = []
         for result in mycursor.stored_results():
             data = result.fetchall()
-        if len(data) == 2:
-            country = data[0][1]
-            GDP = data[0][2]
-        else:
-            country = form.country.data
-            GDP = "blank. There is no available GDP for " + country + "."
-        print(data)
+        for i in range(len(data)):
+            country.append(data[i][0])
+            if data[i][1] is None:
+                GDP.append(0)
+            else: 
+                GDP.append(data[i][1])
         return render_template('layout_four.html', country=country, GDP=GDP)
     elif form.query.data == "5":
-        mycursor.callproc("current_region_population")
+        region = form.region.data
+        result = mycursor.callproc('region_life', (region,))
+        year = []
+        expectancy = []
+        for result in mycursor.stored_results():
+            data = result.fetchall()
+        for i in range(len(data)):
+            year.append(data[i][0])
+            if data[i][1] is None:
+                expectancy.append(0)
+            else: 
+                expectancy.append(data[i][1])
+        return render_template('layout_five.html', region=region, expectancy=expectancy)
     elif form.query.data == "6":
         year = []
         expectancy = []
@@ -119,11 +130,80 @@ def success(form):
 
         
     
-        return render_template('layout_five.html',year=year, expectancy=expectancy)
-
-
-
-
+        return render_template('layout_six.html',year=year, expectancy=expectancy)
+    elif form.query.data == "7":
+        region = form.region.data
+        result = mycursor.callproc('within_region_life', (region, 0))
+        country = []
+        expectancy = []
+        highest = result[1]
+        for result in mycursor.stored_results():
+            data = result.fetchall()
+        for i in range(len(data)):
+            country.append(data[i][0])
+            if data[i][1] is None:
+                expectancy.append(0)
+            else: 
+                expectancy.append(data[i][1])
+        return render_template('layout_seven.html', highest=highest, region=region, country=country, expectancy=expectancy)
+    elif form.query.data == "8":
+        country_name = []
+        difference = []
+        result = mycursor.callproc('GDP_difference', (0, 0))
+        increase = result[0]
+        decrease = result[1]
+        query = "SELECT * FROM GDP_difference"
+        mycursor.execute(query)
+        for i in mycursor:
+            country_name.append(i[0])
+            difference.append(i[1])
+        return render_template('layout_eight.html', country_name=country_name, difference=difference, increase=increase, decrease=decrease)
+    elif form.query.data == "9":
+        country_name = []
+        difference = []
+        result = mycursor.callproc('Pop_difference', (0, 0))
+        increase = result[0]
+        decrease = result[1]
+        query = "SELECT * FROM Pop_difference"
+        mycursor.execute(query)
+        for i in mycursor:
+            country_name.append(i[0])
+            difference.append(i[1])
+        return render_template('layout_nine.html', country_name=country_name, difference=difference, increase=increase, decrease=decrease)
+    elif form.query.data == "10":
+        year = []
+        GDP = []
+        country = form.country.data
+        result = mycursor.callproc('country_GDP', (country,))
+        for result in mycursor.stored_results():
+            data = result.fetchall()
+        print(data)
+        for i in range(len(data)):
+            year.append(data[i][0])
+            GDP.append(data[i][1])
+        print(year)
+        print(GDP)
+        return render_template('layout_ten.html',year=year, GDP=GDP)
+    elif form.query.data == "11":
+        life = []
+        gdp = []
+        res = []
+        country = form.region.data
+        #Change the procedure name to the one that we chose in procedure file when you run code
+        result = mycursor.callproc('r_life_GDP', (region,))
+        for result in mycursor.stored_results():
+            data = result.fetchall()
+        print(data)
+       
+        for i in range(len(data)):
+            res.append({"x": data[i][1],
+                        "y": data[i][2]})
+        for i in data:
+            population.append(i[1])
+        for i in data:
+            gdp.append(i[2])
+        r = calculateValue(population,gdp)
+        return render_template('layout_eleven.html', region=region, res=res, r=r)
     else:
         return True
     return True

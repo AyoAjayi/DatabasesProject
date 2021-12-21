@@ -93,7 +93,7 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS country_GDP //
 CREATE PROCEDURE country_GDP(IN c VARCHAR(50))
 BEGIN
-SELECT year, GDP FROM GDP_per_capita INNER JOIN Country ON GDP_per_capita.country=Country.country_code WHERE country_name = c;
+SELECT year, GDP FROM GDP_per_capita INNER JOIN Country ON GDP_per_capita.country=Country.country_code WHERE country_name = c ORDER BY year;
 END //
 DELIMITER ;
 
@@ -114,11 +114,11 @@ DELIMITER ;
 
 5b. What country within a region has the highest life expectancy rate and how does it compare to the rest of the region?
 DELIMITER //
-DROP PROCEDURE IF EXISTS current_within_life //
-CREATE PROCEDURE current_within_life(IN r VARCHAR(25))
+DROP PROCEDURE IF EXISTS within_region_life //
+CREATE PROCEDURE within_region_life(IN r VARCHAR(25), OUT highest VARCHAR(50))
 BEGIN
 SELECT country_name, expectancy FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND region = r;
-SELECT country_name FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND expectancy IN (SELECT MAX(expectancy) FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND region = r);
+SELECT country_name INTO highest FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND expectancy IN (SELECT MAX(expectancy) FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND region = r);
 END //
 DELIMITER ;
 
@@ -142,7 +142,7 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS country_life //
 CREATE PROCEDURE country_life(IN c VARCHAR(50))
 BEGIN
-SELECT year, expectancy FROM Life_expectancy INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE country_name = c;
+SELECT year, expectancy FROM Life_expectancy INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE country_name = c ORDER BY year;
 END //
 DELIMITER ;
 
@@ -151,8 +151,8 @@ DELIMITER ;
 
 6a. What is the average life expectancy rate in a region and how does it compare to GDP over time?
 DELIMITER //
-DROP PROCEDURE IF EXISTS region_life_GDP //
-CREATE PROCEDURE region_life_GDP(IN r VARCHAR(25))
+DROP PROCEDURE IF EXISTS r_life_GDP //
+CREATE PROCEDURE r_life_GDP(IN r VARCHAR(25))
 BEGIN
 SELECT Life_expectancy.year, AVG(expectancy) AS avg_expectancy, SUM(GDP) AS GDP FROM Life_expectancy INNER JOIN GDP_per_capita USING (country) INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE Life_expectancy.year = GDP_per_capita.year AND region = r GROUP BY year;
 END //

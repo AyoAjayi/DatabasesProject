@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-control" content="no-cache">
   <title>Document</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 </head>
 <body>
-  <h1>What is the GDP per capita within a region</h1>
+  <h3>Query: What is the GDP per capita of a country over time?</h3>
   <canvas id="myChart" width="400" height="400"></canvas>
   
 <script>
+
 var ctx = document.getElementById("myChart").getContext('2d');
 
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
-        labels: {{country | tojson}},
+        labels: {{year | tojson}},
         datasets: [{
             label: 'GDP per capita',
-            data: {{GDP |}},
-            backgroundColor: 
-                'rgba(255, 99, 132, 0.2)',
-            borderColor: 
-                'rgba(255,99,132,1)',
-            borderWidth: 1
+            data: {{GDP | tojson}},
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderWidth: 2
         }]
     },
     options: {
@@ -37,9 +37,8 @@ var myChart = new Chart(ctx, {
         }
     }
 });
-
 </script>
-  
-  
+
 </body>
 </html>
+
