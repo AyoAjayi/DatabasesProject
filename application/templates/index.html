@@ -1,5 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>Welcome User</h1>
+  <p>Please select a country or region below. Then select the question you would like to be answered!</p>
+  <form method = "POST">
+    {{form.csrf_token}}
+    {{form.query}}
+    {{form.country}}
+    {{form.region}}
+    <input type="submit"/>
+
+  </form>
+  
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
  
 <head>
     <title>Geographic Web App</title>
@@ -7,7 +30,7 @@
 <body>
   <h1>Welcome User</h1>
 </body>
-</html>
+</html> -->
 
 <!-- {% extends 'layout.html' %}
 {% block content %}

@@ -1,6 +1,14 @@
+
+CREATE TABLE IF NOT EXISTS Country(country_code CHAR(3), country_name VARCHAR(50), region VARCHAR(25), PRIMARY KEY (country_code));
+LOAD DATA LOCAL INFILE '/Users/ayo/Downloads/countries1.csv' INTO TABLE Country
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n' 
+;
+
+
 CREATE TABLE IF NOT EXISTS GDP_per_capita (country CHAR(3) NOT NULL, GDP FLOAT, year CHAR(4) NOT NULL, FOREIGN KEY (country) REFERENCES Country (country_code));
 
-LOAD DATA LOCAL INFILE '/Users/michiko/Developer/CS315/DatabasesProject/csv/gdp-per-capita.csv' INTO TABLE GDP_per_capita 
+LOAD DATA LOCAL INFILE '/Users/ayo/Downloads/gdp-per-capita.csv' INTO TABLE GDP_per_capita 
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\n' 
 (country, @vgdp, year) 
@@ -12,7 +20,7 @@ UPDATE GDP_per_capita SET GDP = NULL WHERE GDP = 0;
 
 CREATE TABLE IF NOT EXISTS Population (country CHAR(3) NOT NULL, population INT, year CHAR(4) NOT NULL, FOREIGN KEY (country) REFERENCES Country (country_code));
 
-LOAD DATA LOCAL INFILE '/Users/michiko/Developer/CS315/DatabasesProject/csv/population.csv' INTO TABLE Population
+LOAD DATA LOCAL INFILE '/Users/ayo/Downloads/population.csv' INTO TABLE Population
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\n' 
 (country, @vp, year) 
@@ -24,7 +32,7 @@ UPDATE Population SET population = NULL WHERE population = 0;
 
 CREATE TABLE IF NOT EXISTS Life_expectancy (country CHAR(3) NOT NULL, expectancy INT, year CHAR(4) NOT NULL, FOREIGN KEY (country) REFERENCES Country (country_code));
 
-LOAD DATA LOCAL INFILE '/Users/michiko/Developer/CS315/DatabasesProject/csv/life-expectancy.csv' INTO TABLE Life_expectancy
+LOAD DATA LOCAL INFILE '/Users/ayo/Downloads/life-expectancy.csv' INTO TABLE Life_expectancy
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\n' 
 (country, @ve, year) 
