@@ -1,0 +1,203 @@
+1. Which countries are most/least populous?
+DELIMITER //
+DROP PROCEDURE IF EXISTS current_country_population //
+CREATE PROCEDURE current_country_population(OUT max VARCHAR(50), OUT min VARCHAR(50))
+BEGIN
+SELECT country_name, population FROM Country INNER JOIN Population ON Population.country=Country.country_code WHERE year = "2019";
+SELECT country_name INTO max FROM Country INNER JOIN Population ON Population.country=Country.country_code WHERE population IN (SELECT MAX(population) FROM Country INNER JOIN Population ON Population.country=Country.country_code WHERE year = "2019");
+SELECT country_name INTO min FROM Country INNER JOIN Population ON Population.country=Country.country_code WHERE population IN (SELECT MIN(population) FROM Country INNER JOIN Population ON Population.country=Country.country_code WHERE year = "2019");
+END //
+DELIMITER ;
+
+
+
+
+
+2. Which region has the highest/lowest population?
+DELIMITER //
+DROP PROCEDURE IF EXISTS current_region_population //
+CREATE PROCEDURE current_region_population(OUT max VARCHAR(25), OUT min VARCHAR(25))
+BEGIN
+SELECT region, SUM(population) AS total_population FROM Country INNER JOIN Population WHERE year = "2019" GROUP BY region;
+SELECT region INTO max FROM (SELECT region, SUM(population) AS total_population FROM Country INNER JOIN Population WHERE year = "2019" GROUP BY region) totals WHERE total_population IN (SELECT MAX(total) FROM (SELECT region, SUM(population) AS total FROM Country INNER JOIN Population WHERE year = "2019" GROUP BY region) totals);
+SELECT region INTO max FROM (SELECT region, SUM(population) AS total_population FROM Country INNER JOIN Population WHERE year = "2019" GROUP BY region) totals WHERE total_population IN (SELECT MIN(total) FROM (SELECT region, SUM(population) AS total FROM Country INNER JOIN Population WHERE year = "2019" GROUP BY region) totals);
+END //
+DELIMITER ;
+
+
+
+
+
+3a. What is the relationship between a country’s population and GDP?
+DELIMITER //
+DROP PROCEDURE IF EXISTS GDP_population //
+CREATE PROCEDURE GDP_population(IN c VARCHAR(50))
+BEGIN
+SELECT Population.year, population, GDP FROM Population INNER JOIN GDP_per_capita USING (country) INNER JOIN Country ON Country.country_code=Population.country WHERE Population.year = GDP_per_capita.year AND country_name = c;
+END //
+DELIMITER ;
+
+
+
+
+3b. What is the relationship between a region's population and GDP?
+DELIMITER //
+DROP PROCEDURE IF EXISTS region_GDP_population //
+CREATE PROCEDURE region_GDP_population(IN r VARCHAR(50))
+BEGIN
+SELECT Population.year, SUM(population) AS population, SUM(GDP) AS GDP FROM Population INNER JOIN GDP_per_capita USING (country) INNER JOIN Country ON Country.country_code=Population.country WHERE Population.year = GDP_per_capita.year AND region = r GROUP BY Population.year ORDER BY Population.year ASC;
+END //
+DELIMITER ;
+
+
+
+
+4a. What is the GDP per capita per region?
+DELIMITER //
+DROP PROCEDURE IF EXISTS current_region_GDP //
+CREATE PROCEDURE current_region_GDP()
+BEGIN
+SELECT region, SUM(GDP) AS total_GDP FROM Country INNER JOIN GDP_per_capita ON GDP_per_capita.country=Country.country_code WHERE year = "2020" GROUP BY region;
+END //
+DELIMITER ;
+
+
+
+
+4b. What is the GDP per capita within a region?
+DELIMITER //
+DROP PROCEDURE IF EXISTS current_within_GDP //
+CREATE PROCEDURE current_within_GDP(IN r VARCHAR(25))
+BEGIN
+SELECT country_name, GDP FROM Country INNER JOIN GDP_per_capita ON GDP_per_capita.country=Country.country_code WHERE year = "2020" AND region = r;
+END //
+DELIMITER ;
+
+
+
+
+4c. What is a region's GDP per capita over time?
+DELIMITER //
+DROP PROCEDURE IF EXISTS region_GDP //
+CREATE PROCEDURE region_GDP(IN r VARCHAR(25))
+BEGIN
+SELECT year, SUM(GDP) AS total_GDP FROM GDP_per_capita INNER JOIN Country ON GDP_per_capita.country=Country.country_code WHERE region = r GROUP BY year;
+END //
+DELIMITER ;
+
+
+
+
+4d. What is a country's GDP per capita over time?
+DELIMITER //
+DROP PROCEDURE IF EXISTS country_GDP //
+CREATE PROCEDURE country_GDP(IN c VARCHAR(50))
+BEGIN
+SELECT year, GDP FROM GDP_per_capita INNER JOIN Country ON GDP_per_capita.country=Country.country_code WHERE country_name = c;
+END //
+DELIMITER ;
+
+
+
+
+5a. What is the life expectancy rate per region?
+DELIMITER //
+DROP PROCEDURE IF EXISTS current_region_life //
+CREATE PROCEDURE current_region_life()
+BEGIN
+SELECT region, AVG(expectancy) AS expectancy FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" GROUP BY region;
+END //
+DELIMITER ;
+
+
+
+
+5b. What country within a region has the highest life expectancy rate and how does it compare to the rest of the region?
+DELIMITER //
+DROP PROCEDURE IF EXISTS current_within_life //
+CREATE PROCEDURE current_within_life(IN r VARCHAR(25))
+BEGIN
+SELECT country_name, expectancy FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND region = r;
+SELECT country_name FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND expectancy IN (SELECT MAX(expectancy) FROM Country INNER JOIN Life_expectancy ON Life_expectancy.country=Country.country_code WHERE year = "2019" AND region = r);
+END //
+DELIMITER ;
+
+
+
+
+5c. What is the average life expectancy rate of a region over time?
+DELIMITER //
+DROP PROCEDURE IF EXISTS region_life //
+CREATE PROCEDURE region_life(IN r VARCHAR(25))
+BEGIN
+SELECT year, AVG(expectancy) AS avg_expectancy FROM Life_expectancy INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE region = r GROUP BY year;
+END //
+DELIMITER ;
+
+
+
+
+5d. What is the life expectancy rate of a country over time?
+DELIMITER //
+DROP PROCEDURE IF EXISTS country_life //
+CREATE PROCEDURE country_life(IN c VARCHAR(50))
+BEGIN
+SELECT year, expectancy FROM Life_expectancy INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE country_name = c;
+END //
+DELIMITER ;
+
+
+
+
+6a. What is the average life expectancy rate in a region and how does it compare to GDP over time?
+DELIMITER //
+DROP PROCEDURE IF EXISTS region_life_GDP //
+CREATE PROCEDURE region_life_GDP(IN r VARCHAR(25))
+BEGIN
+SELECT Life_expectancy.year, AVG(expectancy) AS avg_expectancy, SUM(GDP) AS GDP FROM Life_expectancy INNER JOIN GDP_per_capita USING (country) INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE Life_expectancy.year = GDP_per_capita.year AND region = r GROUP BY year;
+END //
+DELIMITER ;
+
+
+
+
+6b. What is the life expectancy in a country and how does it compare to GDP over time?
+DELIMITER //
+DROP PROCEDURE IF EXISTS country_life_GDP //
+CREATE PROCEDURE country_life_GDP(IN c VARCHAR(50))
+BEGIN
+SELECT Life_expectancy.year, expectancy, GDP FROM Life_expectancy INNER JOIN GDP_per_capita USING (country) INNER JOIN Country ON Life_expectancy.country=Country.country_code WHERE Life_expectancy.year = GDP_per_capita.year AND country_name=c;
+END //
+DELIMITER ;
+
+
+
+
+7. What country's GDP has increased/decreased the most across 20 years?
+DELIMITER //
+DROP PROCEDURE IF EXISTS GDP_difference //
+CREATE PROCEDURE GDP_difference(OUT i VARCHAR(50), OUT d VARCHAR(50))
+BEGIN
+CREATE TABLE IF NOT EXISTS t1 AS (SELECT c.country_code AS country, g.GDP FROM Country c, GDP_per_capita g WHERE c.country_code=g.country AND g.year="2000" AND g.GDP IS NOT NULL);
+CREATE TABLE IF NOT EXISTS t2 AS (SELECT c.country_code AS country, g.GDP FROM Country c, GDP_per_capita g WHERE c.country_code=g.country AND g.year="2020" AND g.GDP IS NOT NULL);
+CREATE TABLE IF NOT EXISTS GDP_difference AS (SELECT country_name, (t2.GDP-t1.GDP) AS difference FROM t1, t2 INNER JOIN Country ON country=Country.country_code WHERE t1.country=t2.country);
+SELECT country_name INTO i FROM GDP_difference WHERE difference IN (SELECT MAX(difference) FROM GDP_difference WHERE difference > 0);
+SELECT country_name INTO d FROM GDP_difference WHERE difference IN (SELECT MIN(difference) FROM GDP_difference WHERE difference < 0);
+END //
+DELIMITER ;
+
+
+
+
+8. Which country's population has increased/decreased the most across a time period?
+DELIMITER //
+DROP PROCEDURE IF EXISTS Pop_difference //
+CREATE PROCEDURE Pop_difference(OUT i VARCHAR(50), OUT d VARCHAR(50))
+BEGIN
+CREATE TABLE IF NOT EXISTS p1 AS (SELECT c.country_code AS country, p.population FROM Country c, Population p WHERE c.country_code=p.country AND p.year="1999" AND p.population IS NOT NULL);
+CREATE TABLE IF NOT EXISTS p2 AS (SELECT c.country_code AS country, p.population FROM Country c, Population p WHERE c.country_code=p.country AND p.year="2019" AND p.population IS NOT NULL);
+CREATE TABLE IF NOT EXISTS Pop_difference AS (SELECT country_name, (p2.population-p1.population) AS difference FROM p1, p2 INNER JOIN Country ON country=Country.country_code WHERE p1.country=p2.country);
+SELECT country_name INTO i FROM Pop_difference WHERE difference IN (SELECT MAX(difference) FROM Pop_difference WHERE difference > 0);
+SELECT country_name INTO d FROM Pop_difference WHERE difference IN (SELECT MIN(difference) FROM Pop_difference WHERE difference < 0);
+END //
+DELIMITER ;
