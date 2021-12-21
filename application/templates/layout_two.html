@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+<body>
+<h3>Query: Which region is the least/most populated?</h3>
+  <canvas id="pie-chart" width="800" height="450"></canvas>
+  
+<script>
+    new Chart(document.getElementById("pie-chart"), {
+        type: 'pie',
+        data: {
+        labels: {{region | tojson}},
+        datasets: [{
+            label: "Population",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850","#c35810","#c45860", "#3e95fd", "#9c5ea2"],
+            data: {{actualPop | tojson}}
+        }]
+        },
+        options: {
+        title: {
+            display: true,
+            text: 'Total Population per region'
+        }
+        }
+    });
+</script>
+
+        
+    
+ 
+  
+</body>
+</html>

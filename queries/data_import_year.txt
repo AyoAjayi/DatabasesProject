@@ -5,10 +5,10 @@ FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n' 
 ;
 
-
+DROP TABLE IF EXISTS GDP_per_capita;
 CREATE TABLE IF NOT EXISTS GDP_per_capita (country CHAR(3) NOT NULL, GDP FLOAT, year CHAR(4) NOT NULL, FOREIGN KEY (country) REFERENCES Country (country_code));
 
-LOAD DATA LOCAL INFILE '/Users/ayo/Downloads/gdp-per-capita.csv' INTO TABLE GDP_per_capita 
+LOAD DATA LOCAL INFILE '/Users/ayo/Desktop/gdp-per-capita.csv' INTO TABLE GDP_per_capita 
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\n' 
 (country, @vgdp, year) 

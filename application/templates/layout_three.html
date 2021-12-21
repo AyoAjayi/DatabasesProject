@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+<body>
+  <h3>Query: What is the relationship between GDP and Population?</h3>
+  <p>GDP and Population are {{r}}% related to each other</p>
+  <canvas id="myChart1"></canvas>
+  <script>
+    let name = '{{ res | tojson }}'; 
+    var persons = JSON.parse(name);
+    // let chartInfo = name.map(function(item) {
+    //     return {
+    //         x: item.x,
+    //         y: item.y
+    //     };
+    // });
+	alert('Hello, ' + persons); 
+    var value = [{
+             x: 0,
+             y: 5
+          }, {
+             x: 5,
+             y: 10
+          }, {
+             x: 8,
+             y: 5
+          }, {
+             x: 15,
+             y: 0
+          }]
+  var x = new Chart(document.getElementById("myChart1"), {
+    type: 'scatter',
+    data: {
+       datasets: [{
+          label: "Test",
+          lineTension: 0,   
+          data: persons,
+          showLine: false,
+          backgroundColor: "black"
+       }]
+    },
+    options: {
+       responsive: true,
+       maintainAspectRatio: false,
+	   elements: {
+		line: {
+          	tension: 0,
+            // shadow / fill
+			fill: false
+        }
+	},
+    }
+ });
+</script>
+
+  <!-- <img src="/static/pgdp.png" alt="Simply Easy Learning" width="800" height="800"> -->
+  
+  
+
+</body>
+</html>

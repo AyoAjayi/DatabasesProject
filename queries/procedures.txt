@@ -30,8 +30,8 @@ DELIMITER ;
 
 3a. What is the relationship between a country’s population and GDP?
 DELIMITER //
-DROP PROCEDURE IF EXISTS GDP_population //
-CREATE PROCEDURE GDP_population(IN c VARCHAR(50))
+DROP PROCEDURE IF EXISTS pop_gdp //
+CREATE PROCEDURE pop_gdp (IN c VARCHAR(50))
 BEGIN
 SELECT Population.year, population, GDP FROM Population INNER JOIN GDP_per_capita USING (country) INNER JOIN Country ON Country.country_code=Population.country WHERE Population.year = GDP_per_capita.year AND country_name = c;
 END //
@@ -64,7 +64,7 @@ DELIMITER ;
 
 
 
-4b. What is the GDP per capita within a region?
+4b. What is the GDP per capita in this country?
 DELIMITER //
 DROP PROCEDURE IF EXISTS current_within_GDP //
 CREATE PROCEDURE current_within_GDP(IN r VARCHAR(25))
