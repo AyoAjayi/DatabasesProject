@@ -7,7 +7,7 @@ import mysql.connector
 
 @app.route("/", methods=['GET', 'POST'])
 def myapp():
-    mydb = mysql.connector.connect(host="localhost", user="root", password="cool1234", database="mydb")
+    mydb = mysql.connector.connect(host="localhost", user="root", password="DA25wn!*", database="final_project")
     form = MyForm()
     if form.validate_on_submit():
         mycursor = mydb.cursor()
@@ -39,7 +39,7 @@ def myapp():
             population.append(i[1])
         print(country_name)
         print(population)
-    return render_template('index.html',form=form)
+    return render_template('index.html',form=form, country_name=country_name, population=population)
 
 if __name__ == "__main__":
     app.run(debug=True)
