@@ -3,7 +3,7 @@ from wtforms import Form, StringField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 import pandas as pd
 
-data = pd.read_csv("/Users/ayo/Desktop/DatabasesProject/csv/countries.csv")   #read the csv file (put 'r' before the path string to address any special characters in the path, such as '\'). Don't forget to put the file name at the end of the path + ".csv"
+data = pd.read_csv("/Users/michiko/Developer/CS315/DatabasesProject/csv/countries.csv")   #read the csv file (put 'r' before the path string to address any special characters in the path, such as '\'). Don't forget to put the file name at the end of the path + ".csv"
 country = data["country_name"]
 region = data["region"]
 country_data = []
